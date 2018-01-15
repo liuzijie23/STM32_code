@@ -3,6 +3,7 @@
 #include "oled.h"
 #include <stm32f10x.h>
 #include "printf.h"
+extern u16 temperature[2],himidity[2],L_intensity[2];
 
 u8  U8T_data_H,U8T_data_L,U8RH_data_H,U8RH_data_L,U8checkdata;
 u8  U8T_data_H_temp,U8T_data_L_temp,U8RH_data_H_temp,U8RH_data_L_temp,U8checkdata_temp;
@@ -129,8 +130,14 @@ void DHT11_get_data(void)
 			U8T_data_H=U8T_data_H_temp;
 			U8T_data_L=U8T_data_L_temp;
 			U8checkdata=U8checkdata_temp;
-			printf("temp = %d\r\n",temp);
-			OLED_ShowNum(35,0,temp,3,16);
+			printf("temp = %d\r\n",U8T_data_H);
+			printf("humi = %d\r\n",U8RH_data_H);
+			OLED_ShowNum(35,0,U8T_data_H,3,16);
+			OLED_ShowNum(99,0,U8RH_data_H,3,16);
+			if (U8T_data_H<temperature[0]) GPIO_SetBits(GPIOA,GPIO_Pin_2); else GPIO_ResetBits(GPIOA,GPIO_Pin_2);
+			if (U8T_data_H>temperature[1]) GPIO_SetBits(GPIOA,GPIO_Pin_3); else GPIO_ResetBits(GPIOA,GPIO_Pin_3);
+			if (U8RH_data_H<himidity[0]) GPIO_SetBits(GPIOA,GPIO_Pin_4); else GPIO_ResetBits(GPIOA,GPIO_Pin_4);
+			if (U8RH_data_H>himidity[1]) GPIO_SetBits(GPIOA,GPIO_Pin_5); else GPIO_ResetBits(GPIOA,GPIO_Pin_5);
 		}
 		else printf("checksum failure \r\n");
 	}
